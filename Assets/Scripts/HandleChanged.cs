@@ -1,9 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HandleChanged : MonoBehaviour
 {
+    private Health _health;
     private Slider _slider;
 
     private float _rate;
@@ -13,17 +15,20 @@ public class HandleChanged : MonoBehaviour
 
     private void Start()
     {
+        _health = GetComponent<Health>();
         _slider = GetComponent<Slider>();
-        _rate = 5f;
+
+        _rate = 10f;
         _changeValue = 10;
     }
     public void SetHandleValueDamage()
     {
-        ChangeVolume(_slider.value + _changeValue);
+        ChangeVolume(_health.GetCurrentHealthValue() + _changeValue);
     }
+
     public void SetHandleValueHeal()
     {
-        ChangeVolume(_slider.value - _changeValue);
+        ChangeVolume(_health.GetCurrentHealthValue() - _changeValue);
     }
 
     private void ChangeVolume(float value)
@@ -37,9 +42,9 @@ public class HandleChanged : MonoBehaviour
     }
     private IEnumerator HandleChanging(float value)
     {
-        while (_slider.value != value)
+        while (_health.GetCurrentHealthValue() != value)
         {
-            _slider.value = Mathf.MoveTowards(_slider.value, value, _rate * Time.deltaTime);
+            _slider.value = Mathf.MoveTowards(_health.GetCurrentHealthValue(), value, _rate * Time.deltaTime);
 
             yield return new WaitForEndOfFrame();
         }
