@@ -1,27 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    private Health _health;
+    [SerializeField] private Health _health;
 
-    private int _changeValue;
+    private int _healValue;
+    private int _damageValue;
+
+    private IEnumerator _currentCoroutine;
 
     private void Start()
     {
-        _health = GetComponent<Health>();
-
-        _changeValue = 10;
+        _damageValue = 10;
+        _healValue = 10;
     }
+
     public void SetHandleValueDamage()
     {
-        _health.ChangeVolume(_health.GetCurrentHealthValue() + _changeValue);
+        ChangeHandle(_health.GetCurrentHealthValue() + _damageValue);
     }
 
     public void SetHandleValueHeal()
     {
-        _health.ChangeVolume(_health.GetCurrentHealthValue() - _changeValue);
+        ChangeHandle(_health.GetCurrentHealthValue() - _healValue);
     }
+
+    private void ChangeHandle(float value)
+    {
+        if (_currentCoroutine != null)
+            StopCoroutine(_currentCoroutine);
+
+        _currentCoroutine = _health.HandleChanging(value);
+
+        StartCoroutine(_currentCoroutine);
+    }  
 }
