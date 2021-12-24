@@ -1,30 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
+[RequireComponent(typeof(Slider))]
 public class HealthBar : MonoBehaviour
 {
     [SerializeField] private Health _health;
 
-    private int _healValue;
-    private int _damageValue;
+    private Slider _slider;
+
+    private float _rate;
 
     private IEnumerator _currentCoroutine;
 
     private void Start()
     {
-        _damageValue = 10;
-        _healValue = 10;
+        _slider = GetComponent<Slider>();
+        _rate = 10f;
     }
 
-    public void SetHandleValueDamage()
+    public void SetHandleValueDamage(int value)
     {
-        ChangeHandle(_health.GetCurrentHealthValue() + _damageValue);
+        _health.Increase(value, _slider.maxValue);
+        ChangeHandle(_health.HealthValue);
     }
 
-    public void SetHandleValueHeal()
+    public void SetHandleValueHeal(int value)
     {
-        ChangeHandle(_health.GetCurrentHealthValue() - _healValue);
+        _health.Decrease(value, _slider.minValue);
+        ChangeHandle(_health.HealthValue);
     }
 
     private void ChangeHandle(float value)
@@ -32,8 +37,18 @@ public class HealthBar : MonoBehaviour
         if (_currentCoroutine != null)
             StopCoroutine(_currentCoroutine);
 
-        _currentCoroutine = _health.HandleChanging(value);
+        _currentCoroutine = HandleChanging(value);
 
         StartCoroutine(_currentCoroutine);
-    }  
+    }
+
+    private IEnumerator HandleChanging(float value)
+    {
+        while (_slider.value != value)
+        {
+            _slider.value = Mathf.MoveTowards(_slider.value, value, _rate * Time.deltaTime);
+
+            yield return new WaitForEndOfFrame();
+        }
+    }
 }
