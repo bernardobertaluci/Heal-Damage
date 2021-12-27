@@ -14,22 +14,19 @@ public class HealthBar : MonoBehaviour
 
     private IEnumerator _currentCoroutine;
 
+    private void OnEnable()
+    {
+        _health.HealthChanged += OnHealthChanged;
+    }
+
+    private void OnDisable()
+    {
+        _health.HealthChanged -= OnHealthChanged;
+    }
     private void Start()
     {
         _slider = GetComponent<Slider>();
         _rate = 10f;
-    }
-
-    public void SetHandleValueDamage(int value)
-    {
-        _health.Increase(value, _slider.maxValue);
-        ChangeHandle(_health.HealthValue);
-    }
-
-    public void SetHandleValueHeal(int value)
-    {
-        _health.Decrease(value, _slider.minValue);
-        ChangeHandle(_health.HealthValue);
     }
 
     private void ChangeHandle(float value)
@@ -50,5 +47,10 @@ public class HealthBar : MonoBehaviour
 
             yield return new WaitForEndOfFrame();
         }
+    }
+
+    private void OnHealthChanged()
+    {
+        ChangeHandle(_health.HealthValue);
     }
 }
