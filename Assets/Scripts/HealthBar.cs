@@ -49,8 +49,8 @@ public class HealthBar : MonoBehaviour
         }
     }
 
-    private void OnHealthChanged()
+    private void OnHealthChanged(float value)
     {
-        ChangeHandle(_health.HealthValue);
+        ChangeHandle(value);
     }
 }

@@ -1,36 +1,44 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
     [SerializeField] private Slider _healthBar;
 
-    public event UnityAction HealthChanged;
+    public Action<float> HealthChanged;
 
     private float _health;
-    private int _healValue = 10;
-    private int _damageValue = 10;
+    private int _healValue = 11;
+    private int _damageValue = 11;
 
-    public float HealthValue => _health;
-
+    private void Start()
+    {
+        _health = _healthBar.value;
+    }
     public void TakeDamage()
     {
-        if (_health + _damageValue <= _healthBar.maxValue)
-        { 
-            _health += _damageValue;
-            HealthChanged?.Invoke();
-        }           
+        if (_health < _healthBar.maxValue)
+        {             
+            if(_health + _damageValue < _healthBar.maxValue)
+                _health += _damageValue;
+            else
+                _health = _healthBar.maxValue;
+            HealthChanged?.Invoke(_health);
+        }
     }
 
     public void TakeHeal()
     {
-        if (_health - _healValue >= _healthBar.minValue)
+        if(_health > _healthBar.minValue)
         {
-            _health -= _healValue;
-            HealthChanged?.Invoke();
-        }         
+            if (_health - _healValue > _healthBar.minValue)
+                _health -= _healValue;
+            else
+                _health = _healthBar.minValue;
+            HealthChanged?.Invoke(_health);
+        }  
     }
 }
